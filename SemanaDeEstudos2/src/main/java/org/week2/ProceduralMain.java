@@ -4,15 +4,13 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class ProceduralMain {
-
     /*
-        Como um bonus, tente executar 2 e 3 antes de 1. Consegue imaginar porque isso acontece?
-        Nosso processamento, nesse ponto em que estamos em result\Main, está completo,
-        entretanto, não temos um sistema de validações.
-        Em que lugar poderíamos adicionar as validações? o que podemos validar?
-        Tente fazer essas abstrações antes de prosseguir.
-        Em geral, temos o objetivo de manter apenas 1 funcionalidade por métdo...
-        Olhe para nosso menu(), ele segue esta regra?
+        Mantive essa versão procedural, para demonstrar as validações,
+        se houver alguma que você acrescentou, que não está aqui, fique a vontade para complementar.
+        Use essa Classe como base para a abstração das informações das Classes
+        a continuidade dessa tarefa se dará na package .models
+        criamos essa package para separar classes que representam objetos (futuramente entidades)
+        de outras classes com outras funcionalidades.
      */
 
     public static void main(String[] args) {
@@ -24,6 +22,7 @@ public class ProceduralMain {
 
         int selection;
 
+        // o valor da seleção já está sendo validado através do nosso comportamento default
         while (true) {
             displayMenu();
 
@@ -72,26 +71,34 @@ public class ProceduralMain {
         readInfos(actualPrices);
     }
 
-//    public static ArrayList<Double> readInfos() {
     public static void readInfos(ArrayList<Double> actualPrices) {
-        // agora, ao invés de gerar a lista toda vez, estamos atualizando a lista existente.
         Scanner sc = new Scanner(System.in);
-        /*
-            ArrayList<Double> prices = new ArrayList<>();
-
-            for (int i = 0; i < 3; i++) {
-                double priceToAdd = sc.nextDouble();
-                prices.add(priceToAdd);
-            }
-            alem disso, o loop para ler três preços não é mais necessário, vamos
-            executar de acordo com a interação do usuário
-         */
-
         double priceToAdd = sc.nextDouble();
-        actualPrices.add(priceToAdd);
+
+        // função para validar o preço (vamos fazê-la retornar verdadeiro ou falso)
+        boolean isvalidPrice = validatePrice(priceToAdd);
+
+        if (isvalidPrice) {
+            actualPrices.add(priceToAdd);
+            // se é válido, adicionamos e encerramos a função
+            return;
+        }
+        // se não é válido, chega aqui
+        System.out.println("O preço informado é inválido.");
+
+        // pense sobre essa solução, porque precisamos retornar boolean, ao invés de encerrar na validação?
     }
 
     public static void calculateAverage(ArrayList<Double> prices) {
+        // chamando validação de lista
+        boolean isValidList = validatePricesList(prices);
+
+        // aqui usaremos o conceito de "Fail First", evitando processamento, sugiro pesquisar (5 minutos de pesquisa resolve)
+        if (!isValidList) {
+            System.out.println("Sem itens para calcular a média.");
+            return;
+        }
+
         double sum = 0.0;
         double average;
 
@@ -127,9 +134,27 @@ public class ProceduralMain {
     }
 
     public static void displayInfos(ArrayList<Double> prices) {
+        boolean isValidList = validatePricesList(prices);
+
+        if (!isValidList) {
+            System.out.println("Sem itens para exibir infos.");
+            return;
+        }
+
         double bigPrice = getBiggestPrice(prices);
         double minPrice = getMinimalPrice(prices);
         System.out.println("O maior valor é: " + bigPrice);
         System.out.println("O menor valor é: " + minPrice);
+    }
+
+    public static boolean validatePrice(double price) {
+        // como é boolean, você pode retornar uma equação e o resultado será o retorno
+        return price > 0;
+        // preço é maior que 0? então true (válido)
+    }
+
+    public static boolean validatePricesList(ArrayList<Double> prices) {
+        // se preços não está vazio... true
+        return !prices.isEmpty();
     }
 }
